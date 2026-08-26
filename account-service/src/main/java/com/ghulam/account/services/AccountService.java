@@ -5,12 +5,12 @@ import com.ghulam.account.dtos.CreateAccountResponse;
 import com.ghulam.account.entities.CustomerAccount;
 import com.ghulam.account.enums.AccountStatus;
 import com.ghulam.account.repos.AccountRepository;
+import com.ghulam.account.utils.AccountNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static com.ghulam.account.utils.CommonUtils.generateAccountNumber;
 import static com.ghulam.account.utils.TransactionLimits.getTransactionLimit;
 
 @Service
@@ -18,6 +18,7 @@ import static com.ghulam.account.utils.TransactionLimits.getTransactionLimit;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final AccountNumberGenerator accountGenerator;
 
     public CreateAccountResponse createAccount(CreateAccountRequest request) {
         if (accountRepository.existsByCustomerPhone(request.customerPhone())) {
@@ -25,7 +26,7 @@ public class AccountService {
         }
 
         CustomerAccount account = new CustomerAccount();
-        account.setAccountNumber(generateAccountNumber(request.variant()));
+        account.setAccountNumber(accountGenerator.generateAccountNumber(request.variant()));
         account.setCustomerName(request.customerName());
         account.setCustomerEmail(request.customerEmail());
         account.setCustomerPhone(request.customerPhone());
