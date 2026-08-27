@@ -91,7 +91,7 @@ public class AccountService {
 
             return Map.of(
                     "accountNumber", account.getAccountNumber(),
-                    "email", account.getCustomerEmail(),
+                    "customerPhone", account.getCustomerPhone(),
                     "variant", account.getVariant().toString(),
                     "balance", account.getBalance().toString()
             );
@@ -121,7 +121,7 @@ public class AccountService {
 
             return Map.of(
                     "accountNumber", account.getAccountNumber(),
-                    "email", account.getCustomerEmail(),
+                    "customerPhone", account.getCustomerPhone(),
                     "variant", account.getVariant().toString(),
                     "balance", account.getBalance().toString()
             );
