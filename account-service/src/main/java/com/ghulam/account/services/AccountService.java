@@ -61,8 +61,7 @@ public class AccountService {
         String accountNumber = request.getOrDefault("accountNumber", "");
 
         try {
-            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
-                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+            CustomerAccount account = findAccount(accountNumber);
 
             return new CreateAccountResponse(
                     account.getId(),
@@ -86,8 +85,7 @@ public class AccountService {
         String accountNumber = request.getOrDefault("accountNumber", "");
 
         try {
-            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
-                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+            CustomerAccount account = findAccount(accountNumber);
 
             return Map.of(
                     "accountNumber", account.getAccountNumber(),
@@ -105,8 +103,7 @@ public class AccountService {
         String amount = request.getOrDefault("amount", "");
 
         try {
-            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
-                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+            CustomerAccount account = findAccount(accountNumber);
 
             if (account.getStatus() != AccountStatus.ACCOUNT_ACTIVE) {
                 throw new RuntimeException(String.format("Account with this number [%s] is not active.", accountNumber));
@@ -135,8 +132,7 @@ public class AccountService {
         String amount = request.getOrDefault("amount", "");
 
         try {
-            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
-                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+            CustomerAccount account = findAccount(accountNumber);
 
             if (account.getStatus() != AccountStatus.ACCOUNT_ACTIVE) {
                 throw new RuntimeException(String.format("Account with this number [%s] is not active.", accountNumber));
@@ -154,5 +150,13 @@ public class AccountService {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    private CustomerAccount findAccount(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException(
+                                String.format("Account with this number [%s] does not exist.", accountNumber)
+                        )
+                );
     }
 }
