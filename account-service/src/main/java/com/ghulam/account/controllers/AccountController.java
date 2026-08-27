@@ -32,8 +32,8 @@ public class AccountController {
     }
 
     @PostMapping(path = "/getBalance")
-    public ResponseEntity<CreateAccountResponse> getBalance(@RequestBody Map<String, String> request) {
-        CreateAccountResponse out = accountService.getBalance(request);
+    public ResponseEntity<?> getBalance(@RequestBody Map<String, String> request) {
+        var out = accountService.getBalance(request);
         return ResponseEntity.status(HttpStatus.OK).body(out);
     }
 

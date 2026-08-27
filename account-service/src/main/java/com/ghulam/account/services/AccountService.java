@@ -9,6 +9,7 @@ import com.ghulam.account.utils.AccountNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import static com.ghulam.account.utils.TransactionLimits.getTransactionLimit;
@@ -81,11 +82,51 @@ public class AccountService {
         }
     }
 
-    public CreateAccountResponse getBalance(Map<String, String> request) {
-        return null;
+    public Map<String, String> getBalance(Map<String, String> request) {
+        String accountNumber = request.getOrDefault("accountNumber", "");
+
+        try {
+            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+
+            return Map.of(
+                    "accountNumber", account.getAccountNumber(),
+                    "email", account.getCustomerEmail(),
+                    "variant", account.getVariant().toString(),
+                    "balance", account.getBalance().toString()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public Map<String, String> deductBalance(Map<String, String> request) {
-        return null;
+        String accountNumber = request.getOrDefault("accountNumber", "");
+        String amount = request.getOrDefault("amount", "");
+
+        try {
+            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+
+            if (account.getStatus() != AccountStatus.ACCOUNT_ACTIVE) {
+                throw new RuntimeException(String.format("Account with this number [%s] is not active.", accountNumber));
+            }
+
+            if (account.getBalance().compareTo(account.getDailyLimit()) < 0) {
+                throw new RuntimeException(String.format("Account with this number [%s] has insufficient balance.", accountNumber));
+            }
+
+            account.setBalance(account.getBalance().subtract(new BigDecimal(amount)));
+            accountRepository.save(account);
+
+            return Map.of(
+                    "accountNumber", account.getAccountNumber(),
+                    "email", account.getCustomerEmail(),
+                    "variant", account.getVariant().toString(),
+                    "balance", account.getBalance().toString()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }
