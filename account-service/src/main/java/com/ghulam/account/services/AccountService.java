@@ -152,6 +152,31 @@ public class AccountService {
         }
     }
 
+    public Map<String, String> blockAccount(Map<String, String> request) {
+        String accountNumber = request.getOrDefault("accountNumber", "");
+
+        try {
+            CustomerAccount account = findAccount(accountNumber);
+
+            if (account.getStatus() == AccountStatus.ACCOUNT_BLOCKED) {
+                throw new RuntimeException(String.format("Account with this number [%s] is already blocked.", accountNumber));
+            }
+
+            account.setStatus(AccountStatus.ACCOUNT_BLOCKED);
+            accountRepository.save(account);
+
+            return Map.of(
+                    "accountNumber", account.getAccountNumber(),
+                    "customerPhone", account.getCustomerPhone(),
+                    "variant", account.getVariant().toString(),
+                    "balance", account.getBalance().toString(),
+                    "status", account.getStatus().toString()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
     private CustomerAccount findAccount(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException(

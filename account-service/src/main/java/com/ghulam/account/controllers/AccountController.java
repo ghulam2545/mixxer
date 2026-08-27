@@ -49,4 +49,10 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(out);
     }
 
+    @PostMapping(path = "/blockAccount")
+    public ResponseEntity<?> blockAccount(Map<String, String> request) {
+        var out = accountService.blockAccount(request);
+        return ResponseEntity.status(HttpStatus.OK).body(out);
+    }
+
 }
