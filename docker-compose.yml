@@ -1,19 +1,30 @@
 services:
-  postgres:
+  account-postgres:
     image: postgres:17-alpine
     container_name: account_postgres
     restart: unless-stopped
-
     environment:
       POSTGRES_DB: account_db
       POSTGRES_USER: account_user
       POSTGRES_PASSWORD: account_password
-
     ports:
       - "5400:5432"
-
     volumes:
       - account_postgres:/var/lib/postgresql/data
 
+  transaction-postgres:
+    image: postgres:17-alpine
+    container_name: transaction_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: transaction_db
+      POSTGRES_USER: transaction_user
+      POSTGRES_PASSWORD: transaction_password
+    ports:
+      - "5401:5432"
+    volumes:
+      - transaction_postgres:/var/lib/postgresql/data
+
 volumes:
   account_postgres:
+  transaction_postgres:
