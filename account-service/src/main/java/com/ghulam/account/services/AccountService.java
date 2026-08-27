@@ -129,4 +129,30 @@ public class AccountService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    public Map<String, String> receiveBalance(Map<String, String> request) {
+        String accountNumber = request.getOrDefault("accountNumber", "");
+        String amount = request.getOrDefault("amount", "");
+
+        try {
+            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+
+            if (account.getStatus() != AccountStatus.ACCOUNT_ACTIVE) {
+                throw new RuntimeException(String.format("Account with this number [%s] is not active.", accountNumber));
+            }
+
+            account.setBalance(account.getBalance().add(new BigDecimal(amount)));
+            accountRepository.save(account);
+
+            return Map.of(
+                    "accountNumber", account.getAccountNumber(),
+                    "customerPhone", account.getCustomerPhone(),
+                    "variant", account.getVariant().toString(),
+                    "balance", account.getBalance().toString()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }

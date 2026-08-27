@@ -43,4 +43,10 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(out);
     }
 
+    @PostMapping(path = "/receiveBalance")
+    public ResponseEntity<?> receiveBalance(Map<String, String> request) {
+        var out = accountService.receiveBalance(request);
+        return ResponseEntity.status(HttpStatus.OK).body(out);
+    }
+
 }
