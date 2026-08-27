@@ -57,7 +57,28 @@ public class AccountService {
     }
 
     public CreateAccountResponse getAccount(Map<String, String> request) {
-        return null;
+        String accountNumber = request.getOrDefault("accountNumber", "");
+
+        try {
+            CustomerAccount account = accountRepository.findByAccountNumber(accountNumber)
+                    .orElseThrow(() -> new RuntimeException(String.format("Account with this number [%s] does not exist.", accountNumber)));
+
+            return new CreateAccountResponse(
+                    account.getId(),
+                    account.getAccountNumber(),
+                    account.getCustomerName(),
+                    account.getCustomerEmail(),
+                    account.getCustomerPhone(),
+                    account.getCustomerAddress(),
+                    account.getVariant(),
+                    account.getStatus(),
+                    account.getBalance(),
+                    account.getDailyLimit(),
+                    account.getCreatedTimestamp()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public CreateAccountResponse getBalance(Map<String, String> request) {
